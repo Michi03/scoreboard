@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      function addItem() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            let elems = document.querySelectorAll(".wrong");
+            elems.forEach(elem => elem.classList.remove("wrong"));
+          if (this.readyState == 4 && this.status >= 400) {
+            console.log(this.responseText);
+            document.querySelector("#submit").classList.add("wrong");
+          }}};
+        let params = "";
+        let username = document.querySelector("#username");
+        if (typeof username.value === "undefined" || username.value === ""){
+          username.classList.add("wrong");
+          return;
+        }
+	else
+          params = "?username=" + username.value;
+        let trashcan = document.querySelector("#trashcan");
+        if (typeof trashcan.value === "undefined" || (trashcan.value !== 'B' && trashcan.value !== 'P' && trashcan.value !== 'G')) {
+          trashcan.classList.add("wrong");
+          return;
+        }
+        else
+          params += "&trashcan=" + trashcan.value;
+        let type = document.querySelector("#type");
+        if (typeof type.value === "undefined" || (type.value !== 'B' && type.value !== 'P' && type.value !== 'G')) {
+          type.classList.add("wrong");
+          return;
+        }
+        else
+          params += "&type=" + type.value;
+        if (typeof weight.value === "undefined" || weight.value <= 0) {
+          document.querySelector("#weight").classList.add("wrong");
+          return;
+        }
+        else
+          params += "&weight=" + weight.value;
+        xhttp.open("GET", "/addItem" + params, true);
+        xhttp.send();
+      }
+    </script>
+    <style>
+    body{
+      font-family: Gothic, sans-serif;
+      background-color: #444444;
+      color: #E0E69A;
+    }
+    .wrong{
+      border-style: solid;
+      border-width: 5px;
+      border-color: #A11035;
+      border-radius: 5px;
+    }
+    </style>
+  </head>
+
+  <body>
+    <h1>Add Trash Item</h1>
+    <div id="container">
+      <input type="text" id="username" placeholder="username">
+      <input type="text" id="trashcan" placeholder="trashcan (B)io, (P)aper, (G)eneral">
+      <input type="text" id="type" placeholder="type (B)io, (P)aper, (G)eneral">
+      <input type="number" id="weight" placeholder="weight">
+      <input type="submit" id="submit" onclick=addItem()>
+    </div>
+  </body>
+</html>
+

@@ -4,7 +4,10 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
-
+      var scoreboard = window.location.search.substr(1);
+      if (typeof scoreboard !== "undefined")
+        scoreboard = scoreboard.split('=')[1];
+      document.querySelector("a").setAttribute("href","/settings?scoreboard=" + scoreboard);
       // Load the Visualization API and the corechart package.
       google.charts.load('current', {'packages':['corechart']});
 
@@ -20,7 +23,7 @@
           if (this.readyState == 4 && this.status == 200) {
             getScores(JSON.parse(this.responseText));
         }};
-        xhttp.open("GET", "/config?scoreboard=test", true);
+        xhttp.open("GET", "/config?scoreboard=" + scoreboard, true);
         xhttp.send();
       }
 
@@ -119,7 +122,7 @@
   </head>
 
   <body>
-    <h1>Scoreboard</h1><a href="/settings">Scoreboard settings</a>
+    <h1>Scoreboard</h1><a>Scoreboard settings</a>
     <!--Div that will hold the pie chart-->
     <div id="chart_div"></div>
   </body>

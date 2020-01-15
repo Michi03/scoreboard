@@ -1,0 +1,126 @@
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(getConfig);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function getConfig() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            getScores(JSON.parse(this.responseText));
+        }};
+        xhttp.open("GET", "/config?scoreboard=test3", true);
+        xhttp.send();
+      }
+
+      function getScores(users) {
+        var xhttp = new XMLHttpRequest();
+        let userString = "";
+        users.forEach(user => userString += user.username + ",");	      
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) 
+            drawChart(computeScores(JSON.parse(this.responseText)));
+        };
+        userString = userString.substr(0,userString.length-1);
+        xhttp.open("GET", "/scores?users=" + userString, true);
+        xhttp.send();
+      }
+
+      function drawChart(scores) {
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'Score');
+        let sum = 0;
+        data.addRows(scores);
+        // Set chart options
+        var options = {'title':'',
+                       'height':window.screen.height*0.75,
+                       'width':window.screen.width,
+                       'legend': 'none',
+                       'chartArea': {
+                         'backgroundColor': {
+                          'fill': '#F9FAED',
+                          'opacity': 100,
+                          'width': '10%',
+                          'height': '10%'
+                         },
+                         'width': '90%',
+                         'height': '80%'
+                       },
+                       'backgroundColor': {
+                         'fill': '#F0F3D0',
+                         'fillOpacity': 0.8
+                       }
+        };
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
+      function computeScores(rows) {
+        scores = {};
+        totals = {};
+        res = [];
+        for (let i = 0; i < rows.length; i++) {
+          if (typeof totals[rows[i].username] === "undefined")
+            totals[rows[i].username] = rows[i].weight;
+          else
+            totals[rows[i].username] += rows[i].weight;
+          if (typeof scores[rows[i].username] === "undefined")
+            scores[rows[i].username] = (rows[i].trashcan == rows[i].type) * rows[i].weight;
+          else
+            scores[rows[i].username] += (rows[i].trashcan == rows[i].type) * rows[i].weight;
+	}
+        keys = Object.keys(scores);
+        for (let i = 0; i < keys.length; i++)
+          res.push([keys[i],scores[keys[i]]/totals[keys[i]]]);
+        return res;
+      }
+
+      // Connect to web socket
+      var socket = io.connect('https://krapotke.uber.space');
+
+      // On update reload chart
+      socket.on('update', function (data) {
+        getConfig();
+      });
+      // On user changes reload page
+      socket.on('refresh', function (data) {
+        location.reload();
+      });
+    </script>
+    <style>
+    body{
+      font-family: Gothic, sans-serif;
+      background-color: #444444;
+      color: #E0E69A;
+    }
+    h1{
+      display: inline;
+      margin-right: 2em;
+    }
+    a{
+      color: #BDCD00;
+      font-size: 1.5em;
+    }
+    </style>
+  </head>
+
+  <body>
+    <h1>Scoreboard</h1><a href="/settings?scoreboard=test3">Scoreboard settings</a>
+    <!--Div that will hold the pie chart-->
+    <div id="chart_div"></div>
+  </body>
+</html>

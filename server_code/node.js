@@ -20,11 +20,7 @@ con.connect(function(err) {
 });
 
 app.get('/', function(req, res) {
-    let scoreboard = req.query.scoreboard;
-    if (typeof scoreboard === "undefined")
-      res.sendFile(path.join(__dirname + '/../views/index.html'));
-    else
-      res.sendFile(path.join(__dirname + '/../views/index.html?scoreboard=' + scoreboard));
+    res.sendFile(path.join(__dirname + '/../views/index.html'));
 })
 
 app.get('/controls', function(req, res) {
@@ -32,11 +28,7 @@ app.get('/controls', function(req, res) {
 })
 
 app.get('/settings', function(req, res) {
-    let scoreboard = req.query.scoreboard;
-    if (typeof scoreboard === "undefined")
-      res.sendFile(path.join(__dirname + '/../views/settings.html'));
-    else
-      res.sendFile(path.join(__dirname + '/../views/settings.html?scoreboard=' + scoreboard));
+    res.sendFile(path.join(__dirname + '/../views/settings.html'));
 })
 
 io.sockets.on('connection', function (socket) {

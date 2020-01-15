@@ -1,10 +1,16 @@
 <html>
   <head>
     <script type="text/javascript">
+      var scoreboard = window.location.search.substr(1);
+      if (typeof scoreboard !== "undefined")
+        scoreboard = scoreboard.split('=')[1];
+      else
+	scoreboard = test;
       var us = {};
       function getUsers() {
         var xhttp = new XMLHttpRequest();
         let users = [];
+        document.querySelector("a").setAttribute("href","/?scoreboard=" + scoreboard);
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             users = JSON.parse(this.responseText);
@@ -24,19 +30,20 @@
           else
             console.log(this.responseText);
         }
-        let params = "?scoreboard=test";
+        let params = "?scoreboard=" + scoreboard;
         xhttp.open("GET", "/config" + params, true);
         xhttp.send();
       }
 
       function getOthers() {
         var xhttp = new XMLHttpRequest();
-        let users = [];
+        let userList = [];
         xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            users = JSON.parse(this.responseText);
+          if (this.readyState == 4 && this.status == 200) {  
+            let users = JSON.parse(this.responseText);
             users.forEach(function(user) {
-              if (us[user.username] !== true) {
+              if (us[user.username] !== true && userList[user.username] !== true) {
+                userList[user.username] = true;
                 let userItem = document.createElement("div");
                 userItem.innerHTML = "<h3 style='display:inline;margin-right:1em'>" + user.username + "</h3>";
                 let addBtn = document.createElement("button");
@@ -62,7 +69,7 @@
           else
             console.log(this.responseText);
           };
-        let params = "?scoreboard=test&username=" + btn.target.id;
+        let params = "?scoreboard=" + scoreboard + "&username=" + btn.target.id;
         xhttp.open("GET", "/addUser" + params, true);
         xhttp.send();
       }
@@ -75,7 +82,7 @@
           else
             console.log(this.responseText);
           };
-        let params = "?scoreboard=test&username=" + btn.target.id;
+        let params = "?scoreboard=" + scoreboard + "&username=" + btn.target.id;
         xhttp.open("GET", "/removeUser" + params, true);
         xhttp.send();
      }
@@ -99,7 +106,7 @@
   </head>
 
   <body onload="getUsers()">
-    <h1>Your Scoreboard</h1><a href="/">Back to your Scoreboard</a>
+    <h1>Your Scoreboard</h1><a>Back to your Scoreboard</a>
     <div id="container">
     </div>
     <h1>Users from other Scoreboards</h1>

@@ -15,7 +15,7 @@ con.connect(function(err) {
     }
     else {
       console.log("connection successful");
-      server.listen(8080);
+      server.listen(3000, '0.0.0.0');
     }
 });
 
@@ -23,12 +23,27 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/../views/index.html'));
 })
 
+app.get('/scoreboard1', function(req, res) {
+    res.sendFile(path.join(__dirname + '/../views/scoreboard1.html'));
+})
+
+app.get('/scoreboard2', function(req, res) {
+    res.sendFile(path.join(__dirname + '/../views/scoreboard2.html'));
+})
+
+app.get('/scoreboard3', function(req, res) {
+    res.sendFile(path.join(__dirname + '/../views/scoreboard3.html'));
+})
+
 app.get('/controls', function(req, res) {
     res.sendFile(path.join(__dirname + '/../views/controls.html'));
 })
 
-app.get('/configure', function(req, res) {
-    res.sendFile(path.join(__dirname + '/../views/configure.html'));
+app.get('/settings', function(req, res) {
+    if (typeof req.query.scoreboard === "undefined")
+      res.sendFile(path.join(__dirname + '/../views/settings.html'));
+    else
+      res.sendFile(path.join(__dirname + '/../views/settings_' + req.query.scoreboard + '.html'));
 })
 
 io.sockets.on('connection', function (socket) {
@@ -193,7 +208,7 @@ app.get('/addUser', function(req, res) {
         console.log("success");
         res.setHeader('Content-Type', 'application/json');
         res.send(result);
-        io.emit('update');
+        io.emit('refresh');
       }
     });
 })
@@ -227,7 +242,7 @@ app.get('/removeUser', function(req, res) {
         console.log("success");
         res.setHeader('Content-Type', 'application/json');
         res.send(result);
-        io.emit('update');
+        io.emit('refresh');
       }
     });
 })

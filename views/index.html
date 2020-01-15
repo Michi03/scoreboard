@@ -90,10 +90,14 @@
       }
 
       // Connect to web socket
-      var socket = io.connect('http://localhost:8080');
+      var socket = io.connect('https://krapotke.uber.space');
 
       // On update reload chart
       socket.on('update', function (data) {
+        getConfig();
+      });
+      // On user changes reload page
+      socket.on('refresh', function (data) {
         location.reload();
       });
     </script>
@@ -103,11 +107,19 @@
       background-color: #444444;
       color: #E0E69A;
     }
+    h1{
+      display: inline;
+      margin-right: 2em;
+    }
+    a{
+      color: #BDCD00;
+      font-size: 1.5em;
+    }
     </style>
   </head>
 
   <body>
-    <h1>Scoreboard</h1>
+    <h1>Scoreboard</h1><a href="/settings">Scoreboard settings</a>
     <!--Div that will hold the pie chart-->
     <div id="chart_div"></div>
   </body>

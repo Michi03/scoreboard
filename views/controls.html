@@ -42,6 +42,35 @@
         xhttp.open("GET", "/addItem" + params, true);
         xhttp.send();
       }
+
+      function addUser() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            let elems = document.querySelectorAll(".wrong");
+            elems.forEach(elem => elem.classList.remove("wrong"));
+          if (this.readyState == 4 && this.status >= 400) {
+            console.log(this.responseText);
+            document.querySelector("#submit2").classList.add("wrong");
+          }}};
+        let params = "";
+        let username = document.querySelector("#username2");
+        if (typeof username.value === "undefined" || username.value === ""){
+          username.classList.add("wrong");
+          return;
+        }
+        else
+          params = "?username=" + username.value;
+        let scoreboard = document.querySelector("#scoreboard");
+        if (typeof scoreboard.value === "undefined" || scoreboard.value === "") {
+          scoreboard.classList.add("wrong");
+          return;
+        }
+        else
+          params += "&scoreboard=" + scoreboard.value;
+        xhttp.open("GET", "/addUser" + params, true);
+        xhttp.send();
+      }
     </script>
     <style>
     body{
@@ -57,7 +86,6 @@
     }
     </style>
   </head>
-
   <body>
     <h1>Add Trash Item</h1>
     <div id="container">
@@ -66,6 +94,12 @@
       <input type="text" id="type" placeholder="type (B)io, (P)aper, (G)eneral">
       <input type="number" id="weight" placeholder="weight">
       <input type="submit" id="submit" onclick=addItem()>
+    </div>
+    <h1>Add User</h1>
+    <div id="userForm">
+      <input type="text" id="username2" placeholder="username">
+      <input type="text" id="scoreboard" placeholder="scoreboard">
+      <input type="submit" id="submit2" onclick=addUser()>
     </div>
   </body>
 </html>
